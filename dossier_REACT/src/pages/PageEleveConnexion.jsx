@@ -1,16 +1,28 @@
 import React from "react";
 import "../style/PageEleveConnexion.css";
+import { NavLink } from "react-router";
 
 const PageEleveConnexion = () => {
     return (
         <div className="accueil-container">
-            <h1 className="titre"> Bienvenue sur Pronote 2.0 !</h1>
-            <div className="contenu-central">
-                <h2 className="sous-titre">Connexion</h2>
-                <div className="boutons-groupés">
-                    <button className="bouton-login">Élève</button>
-                    <button className="bouton-login">Eleveesseur·e</button>
-                </div>
+            <h1 className="titre"> Connexion Élève </h1>
+            <div className="contenu-login">
+                <form action="URL" method="post">
+                    <fieldset>
+                        <legend>
+                            Login
+                        </legend>
+                        <label>
+                            Identifiant
+                        </label> <br />
+                        <input value="en vrai mettez rien svp, ça marche pas encore" /><br />
+                        <label>
+                            Mot de passe
+                        </label> <br />
+                        <input value="en vrai mettez rien svp, ça marche pas encore" /> <br />  
+                        <button className="bouton-login"> <NavLink to={"EleveNote"}> Se connecter </NavLink> </button>
+                    </fieldset>
+                </form>
             </div>
         </div>
     );

@@ -11,7 +11,7 @@ const PageAccueil = () => {
                 <h2 className="sous-titre">Connexion</h2>
                 <div className="boutons-groupés">
                     <button className="bouton-login">
-                        <NavLink to={"ConnexionEleve"}>Élève</NavLink>
+                        <NavLink to={"ConnexionEleve"}> Élève </NavLink>
                     </button>
                     <button className="bouton-login">Professeur·e</button>
                 </div>
