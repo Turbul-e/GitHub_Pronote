@@ -1,7 +1,7 @@
 import React from "react";
-import "../style/PageAccueil.css";
+import "../style/PageEleveNote.css";
 
-const PageAccueil = () => {
+const PageEleveNote = () => {
     return (
         <div className="accueil-container">
             <h1 className="titre"> Bienvenue sur Pronote 2.0 !</h1>
@@ -15,4 +15,4 @@ const PageAccueil = () => {
         </div>
     );
 };
-export default PageAccueil;
+export default PageEleveNote;
