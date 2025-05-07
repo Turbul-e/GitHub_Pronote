@@ -19,7 +19,10 @@ const PageEleveConnexion = () => {
                         <label>
                             Mot de passe
                         </label> <br />
-                        <input value="en vrai mettez rien svp, ça marche pas encore" /> <br />  
+                        <input value="en vrai mettez rien svp, ça marche pas encore" /> <br />
+                        <p>
+                            Login ou mot de passe oublié ? Cliquez <NavLink to={"OubliMdp"}>ici</NavLink>
+                        </p> <br />
                         <button className="bouton-login"> <NavLink to={"EleveNote"}> Se connecter </NavLink> </button>
                     </fieldset>
                 </form>
