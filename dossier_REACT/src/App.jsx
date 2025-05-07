@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import React from 'react';
 import PageAccueil from "./pages/PageAccueil.jsx";
-import PageEleveConnexion from './pages/PageEleveConnexion.jsx';
+import PageProfNote from './pages/PageProfNote.jsx';
 
 function App() {
   return <PageAccueil />;
