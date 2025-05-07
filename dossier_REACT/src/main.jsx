@@ -15,16 +15,20 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: "test",
-    element: <div>Heloo World</div>
-  },
-  {
     path: "ConnexionEleve",
     element: <PageEleveConnexion />
   },
   {
     path: "EleveNote",
     element: <PageEleveNote />
+  },
+  {
+    path: "/ConnexionEleve/OubliMdp",
+    element: <div className="accueil-container">
+      <h2>
+        Too bad :/
+      </h2>
+    </div>
   }
 ]);
 

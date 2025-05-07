@@ -4,7 +4,7 @@ import PageAccueil from "./pages/PageAccueil.jsx";
 import PageProfNote from './pages/PageProfNote.jsx';
 
 function App() {
-  return <PageProfNote />;
+  return <PageAccueil />;
 }
 
 export default App;
