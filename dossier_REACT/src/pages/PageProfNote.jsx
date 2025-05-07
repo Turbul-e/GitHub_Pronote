@@ -1,9 +1,20 @@
 import React from "react";
 import "../style/PageProfNote.css";
 
-const Dropdown = ({ open, trigger, menu }) => { //l'élément dropdown de base, à réutiliser ailleurs en précisant open, trigger et menu 
+//Idéalement on montrerait le bouton pour choisir le groupe de TD qu'une fois que la classe est séléctionnée, pour l'instant c'est pas le cas. 
+
+const Dropdown = ({ trigger, menu }) => { //l'élément dropdown de base, à réutiliser ailleurs en précisant open, trigger et menu 
+    const [open, setOpen] = React.useState(false);
+
+    const handleMouseEnter = () => {
+        setOpen(true);
+    };
+
+    const handleMouseLeave = () => {
+        setOpen(false);
+    };
     return (
-        <div className="dropdown">
+        <div className="dropdown" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             {trigger}
             {open ? (
                 <ul className="menu">
@@ -17,25 +28,19 @@ const Dropdown = ({ open, trigger, menu }) => { //l'élément dropdown de base, 
 };
 
 const ChoisirClasse = () => {
-    const [open, setOpen] = React.useState(false);
 
-    const handleOpen = () => {
-        setOpen(!open);
-    };
     const handleMenuOne = () => {
         // do something
-        setOpen(false);
     };
 
     const handleMenuTwo = () => {
         // do something
-        setOpen(false);
     };
 
     return (
         <Dropdown
             open={open}
-            trigger={<button className="dropdown" onClick={handleOpen}>Choisir la classe</button>}
+            trigger={<button className="dropdown" >Choisir la classe</button>}
             menu={[
                 <button onClick={handleMenuOne}>Première année</button>,
                 <button onClick={handleMenuTwo}>Deuxième année</button>,
@@ -45,35 +50,27 @@ const ChoisirClasse = () => {
 }
 
 const ChoisirGroupe = () => {
-    const [open, setOpen] = React.useState(false);
 
-    const handleOpen = () => {
-        setOpen(!open);
-    };
     const handleTD1 = () => {
         // choisir juste les élèves du TD1
-        setOpen(false);
     };
 
     const handleTD2 = () => {
         // // choisir juste les élèves du TD2
-        setOpen(false);
     };
 
     const handleTD3 = () => {
         // // choisir juste les élèves du TD3
-        setOpen(false);
     };
 
     const handleTD4 = () => {
         // // choisir juste les élèves du TD4
-        setOpen(false);
     };
 
     return (
         <Dropdown
             open={open}
-            trigger={<button className="dropdown" onClick={handleOpen}>Choisir le groupe de TD</button>}
+            trigger={<button className="dropdown" >Choisir le groupe de TD</button>}
             menu={[
                 <button onClick={handleTD1}>Gr TD1</button>,
                 <button onClick={handleTD2}>Gr TD2</button>,
@@ -84,6 +81,13 @@ const ChoisirGroupe = () => {
     );
 }
 
+const Valider = () => {
+    return (
+        <div></div>
+    )
+
+}
+
 const PageProfNote = () => {
     return (
         <div className="accueil-container">
@@ -92,6 +96,7 @@ const PageProfNote = () => {
             <div className="boutons-groupés">
                 <ChoisirClasse />
                 <ChoisirGroupe />
+                <Valider />
             </div>
         </div>
     );
