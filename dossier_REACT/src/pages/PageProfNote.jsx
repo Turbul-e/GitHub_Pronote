@@ -1,5 +1,5 @@
 import React from "react";
-import "../style/PageProfNote.css";
+import "../style/PageAccueil.css";
 
 //Idéalement on montrerait le bouton pour choisir le groupe de TD qu'une fois que la classe est séléctionnée, pour l'instant c'est pas le cas. 
 
@@ -29,21 +29,30 @@ const Dropdown = ({ trigger, menu }) => { //l'élément dropdown de base, à ré
 
 const ChoisirClasse = () => {
 
-    const handleMenuOne = () => {
+    const [libelle, setLibelle] = React.useState("Première année");
+
+    const handle1A = () => {
         // do something
+        setLibelle("Première année")
     };
 
-    const handleMenuTwo = () => {
+    const handle2A = () => {
         // do something
+        setLibelle("Deuxième année")
+    };
+    const handle3A = () => {
+        // do something
+        setLibelle("Troisième année")
     };
 
     return (
         <Dropdown
             open={open}
-            trigger={<button className="dropdown" >Choisir la classe</button>}
+            trigger={<button className="dropdown" >{">"} {libelle}</button>}
             menu={[
-                <button onClick={handleMenuOne}>Première année</button>,
-                <button onClick={handleMenuTwo}>Deuxième année</button>,
+                <button onClick={handle1A}>Première année</button>,
+                <button onClick={handle2A}>Deuxième année</button>,
+                <button onClick={handle3A}>Troisième année</button>,
             ]}
         />
     );
@@ -51,27 +60,39 @@ const ChoisirClasse = () => {
 
 const ChoisirGroupe = () => {
 
+    const [libelle, setLibelle] = React.useState("Tous les élèves");
+
+    const handleTous = () => {
+        // choisir juste les élèves du TD1
+        setLibelle("Tous les élèves")
+    };
+
     const handleTD1 = () => {
         // choisir juste les élèves du TD1
+        setLibelle("Groupe TD1")
     };
 
     const handleTD2 = () => {
         // // choisir juste les élèves du TD2
+        setLibelle("Groupe TD2")
     };
 
     const handleTD3 = () => {
         // // choisir juste les élèves du TD3
+        setLibelle("Groupe TD3")
     };
 
     const handleTD4 = () => {
         // // choisir juste les élèves du TD4
+        setLibelle("Groupe TD4")
     };
 
     return (
         <Dropdown
             open={open}
-            trigger={<button className="dropdown" >Choisir le groupe de TD</button>}
+            trigger={<button className="dropdown" > {">"} {libelle}</button>}
             menu={[
+                <button onClick={handleTous}>Tous les élèves</button>,
                 <button onClick={handleTD1}>Gr TD1</button>,
                 <button onClick={handleTD2}>Gr TD2</button>,
                 <button onClick={handleTD3}>Gr TD3</button>,
@@ -81,9 +102,16 @@ const ChoisirGroupe = () => {
     );
 }
 
-const Valider = () => {
+const Recherche = () => { //la zone de recherche dans laquelle on entre la classe et le groupe de TD + le bouton Valider pour entrer la recherche
+    const valider = () => {
+        //Ici, faire en sorte que quand on appuie sur "Valider" ça lance la recherche des évals, notes etc de tous les élèves de la classe + groupe de TD choisis. 
+    }
     return (
-        <div></div>
+        <div className="boutons-groupés">
+            <ChoisirClasse />
+            <ChoisirGroupe />
+            <button className="bouton-simple">Valider</button>
+        </div>
     )
 
 }
@@ -92,11 +120,10 @@ const PageProfNote = () => {
     return (
         <div className="accueil-container">
             <h1 className="titre"> Mettre le nom du prof ici</h1>
-            <h2 className="sous-titre">Voyez ici les notes que vous avez donné.</h2>
-            <div className="boutons-groupés">
-                <ChoisirClasse />
-                <ChoisirGroupe />
-                <Valider />
+            <h2 className="sous-titre">Voyez ici les notes que vous avez données.</h2>
+            <div>
+
+                <Recherche />
             </div>
         </div>
     );
