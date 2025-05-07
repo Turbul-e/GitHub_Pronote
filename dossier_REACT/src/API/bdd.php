@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json');
 
-// Connexion à la base de données
 function connecterBDD() {
     $host = 'localhost';
     $dbname = 'PronoteBDD';
@@ -15,13 +14,11 @@ function connecterBDD() {
     }
 }
 
-// Vérifie que la page demandée est valide
 function pageValide($page) {
     $tablesAutorisees = ['Eleves', 'Disciplines', 'Evaluations', 'Professeurs'];
     return in_array($page, $tablesAutorisees);
 }
 
-// Récupère les données de la table correspondant à la page
 function recupererDonnees($bdd, $page) {
     $table = 'Pronote_' . $page;
 
@@ -34,21 +31,11 @@ function recupererDonnees($bdd, $page) {
     }
 }
 
-// ====== Point d'entrée principal ======
-
-if (!isset($_GET['page'])) {
-    echo json_encode(['error' => 'Page non spécifiée']);
-    exit;
-}
-
-$page = $_GET['page'];
-
-if (!pageValide($page)) {
+if (isset($_GET['page']) && pageValide($_GET['page'])) {
+    $bdd = connecterBDD();
+    echo json_encode(recupererDonnees($bdd, $_GET['page']));
+} else {
     echo json_encode(['error' => 'Page invalide']);
-    exit;
 }
 
-$bdd = connecterBDD();
-$resultats = recupererDonnees($bdd, $page);
-echo json_encode($resultats);
-?>
+
