@@ -14,8 +14,9 @@
 .menu {
     position: absolute;
     list-style-type: none;
+    margin-top: 0;
     padding: 0.5rem;
-    font-size: 1.25rem;
+    font-size: 1rem;
     border: none;
     border-radius: 10px;
     background-color: #8BD59E;
@@ -60,4 +61,21 @@ padding: 1rem 2.5rem;
 
 .menu>li>button:hover {
     background-color: #1B9476;
+}
+
+.bouton-simple {
+    padding: 1rem 2.5rem;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 10px;
+    background-color: #8BD59E;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+    min-width: 180px;
+}
+
+.bouton-simple:hover {
+    background-color: #1B9476;
+    transform: scale(1.05);
 }
