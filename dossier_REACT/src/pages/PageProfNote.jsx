@@ -1,5 +1,5 @@
 import React from "react";
-import "../style/PageProfNote.css";
+import "../style/PageAccueil.css";
 
 //Idéalement on montrerait le bouton pour choisir le groupe de TD qu'une fois que la classe est séléctionnée, pour l'instant c'est pas le cas. 
 

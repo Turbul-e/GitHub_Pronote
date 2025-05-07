@@ -1,4 +1,4 @@
-import "../style/PageEleveNote.css";
+import "../style/PageAccueil.css";
 import React, { useEffect, useState } from 'react';
 
 function Eleves() {

@@ -1,5 +1,5 @@
 import React from "react";
-import "../style/PageEleveConnexion.css";
+import "../style/PageAccueil.css";
 import { NavLink } from "react-router";
 
 const PageEleveConnexion = () => {
@@ -21,7 +21,7 @@ const PageEleveConnexion = () => {
                         </label> <br />
                         <input value="en vrai mettez rien svp, ça marche pas encore" /> <br />
                         <p>
-                            Login ou mot de passe oublié ? Cliquez <NavLink to={"OubliMdp"}>ici</NavLink>
+                            Login ou mot de passe oublié ? Cliquez <NavLink to={"/ConnexionEleve/OubliMdp"}>ici</NavLink>
                         </p> <br />
                         <button className="bouton-login"> <NavLink to={"EleveNote"}> Se connecter </NavLink> </button>
                     </fieldset>
