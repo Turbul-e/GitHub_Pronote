@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../style/PageAccueil.css";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router";
 import axios from "axios";
 
 const PageEleveConnexion = () => {
@@ -34,7 +34,7 @@ const PageEleveConnexion = () => {
 
     return (
         <div className="accueil-container">
-            <h1 className="titre">Connexion Professeur·e</h1>
+            <h1 className="titre">Connexion Élève</h1>
             <div className="contenu-login">
                 <form onSubmit={handleSubmit}>
                     <fieldset>
@@ -72,7 +72,7 @@ const PageEleveConnexion = () => {
                         </div>
 
                         <p>
-                            Login ou mot de passe oublié ? Cliquez <a href="/ConnexionProf/OubliMdp">ici</a>
+                            Login ou mot de passe oublié ? Cliquez <NavLink to={"/ConnexionEleve/OubliMdp"}>ici</NavLink>
                         </p><br />
 
                         <button className="bouton-login" type="submit">Se connecter</button>
