@@ -23,7 +23,7 @@ const PageEleveConnexion = () => {
 
             if (response.data.success) {
                 // redirection vers la page du professeur avec ses infos
-                navigate("/ConnexionEleve/EleveNote", { state: response.data.prof });
+                navigate("/ConnexionEleve/EleveNote", { state: response.data.eleve });
             } else {
                 setError(response.data.error);
             }
