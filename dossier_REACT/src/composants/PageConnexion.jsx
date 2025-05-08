@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "../style/PageAccueil.css";
-import { NavLink, useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const PageEleveConnexion = () => {
+const PageConnexion = ({ typeUtilisateur, titre, redirectPath, lienMdpOublie }) => {
     const [login, setLogin] = useState("");
     const [mdp, setMdp] = useState("");
     const [error, setError] = useState(null);
@@ -15,15 +15,24 @@ const PageEleveConnexion = () => {
         setError(null);
 
         try {
-            const response = await axios.post("http://localhost/GitHub_Pronote/API/login.php", {
-                login,
-                mdp,
-                type: "eleve",
-            });
+            const response = await axios.post(
+                "http://localhost/GitHub_Pronote/API/login.php",
+                {
+                    login,
+                    mdp,
+                    type: typeUtilisateur,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                }
+            );
 
             if (response.data.success) {
-                // redirection vers la page du professeur avec ses infos
-                navigate("/ConnexionEleve/EleveNote", { state: response.data.eleve });
+                navigate(redirectPath, {
+                    state: response.data[typeUtilisateur],
+                });
             } else {
                 setError(response.data.error);
             }
@@ -34,7 +43,7 @@ const PageEleveConnexion = () => {
 
     return (
         <div className="accueil-container">
-            <h1 className="titre">Connexion Élève</h1>
+            <h1 className="titre">Connexion {titre}</h1>
             <div className="contenu-login">
                 <form onSubmit={handleSubmit}>
                     <fieldset>
@@ -72,7 +81,7 @@ const PageEleveConnexion = () => {
                         </div>
 
                         <p>
-                            Login ou mot de passe oublié ? Cliquez <NavLink to={"/ConnexionEleve/OubliMdp"}>ici</NavLink>
+                            Mot de passe oublié ? Cliquez <a href={lienMdpOublie}>ici</a>
                         </p><br />
 
                         <button className="bouton-login" type="submit">Se connecter</button>
@@ -83,4 +92,6 @@ const PageEleveConnexion = () => {
             </div>
         </div>
     );
-}
+};
+
+export default PageConnexion;
