@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     element: <PageEleveConnexion />
   },
   {
-    path: "EleveNote",
+    path: "ConnexionEleve/EleveNote",
     element: <PageEleveNote />
   },
   {

@@ -21,7 +21,7 @@ const PageEleveConnexion = () => {
             });
 
             if (response.data.success) {
-                navigate("/ConnexionEleve/EleveNote");
+                navigate("/ConnexionEleve/EleveNote", { state: response.data.eleve });
             } else {
                 setError(response.data.error);
             }

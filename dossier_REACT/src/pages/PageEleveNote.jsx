@@ -1,43 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 
-function Eleves() {
-    const [eleves, setEleves] = useState([]);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        axios.get('./API/bdd.php?page=Eleves')
-            .then(response => {
-                if (response.data.error) {
-                    setError(response.data.error);
-                } else {
-                    setEleves(response.data);
-                }
-            })
-            .catch(err => setError("on a pas trouvé la page !! Erreur réseau : " + err.message));
-    }, []);
+const PageEleveNote = () => {
+    const location = useLocation();
+    const eleve = location.state;
 
     return (
         <div>
-            <h2>Liste des élèves</h2>
-            {error ? (
-                <p style={{ color: 'red' }}>{error}</p>
+            <h1>Informations de l'élève</h1>
+            {eleve ? (
+                <div>
+                    <p><strong>Nom :</strong> {eleve.Nom}</p>
+                    <p><strong>Prénom :</strong> {eleve.Prenom}</p>
+                    <p><strong>Catégorie :</strong> {eleve.Categorie}</p>
+                    <p><strong>Année :</strong> {eleve["Année"]}</p>
+                    <p><strong>Groupe :</strong> {eleve.Groupe}</p>
+                    <h2>Notes</h2>
+                    <ul>
+                        {Object.keys(eleve).filter(key => key.startsWith("Note")).map(key => (
+                            <li key={key}>
+                                {key} : {eleve[key]}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             ) : (
-                <ul>
-                    {eleves.map(eleve => (
-                        <li key={eleve.ID}> {eleve.Nom} {eleve.Prenom}</li>
-                    ))}
-                </ul>
+                <p>Aucune donnée reçue</p>
             )}
         </div>
     );
-}
-
-const PageEleveNote = () => {
-    return (
-        <div>
-            <Eleves />
-        </div>
-    );
 };
+
 export default PageEleveNote;
