@@ -1,12 +1,12 @@
-import "../style/PageAccueil.css";
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function Eleves() {
     const [eleves, setEleves] = useState([]);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost/ton_dossier_php/ton_script.php?page=Eleves')
+        axios.get('./API/bdd.php?page=Eleves')
             .then(response => {
                 if (response.data.error) {
                     setError(response.data.error);
@@ -14,7 +14,7 @@ function Eleves() {
                     setEleves(response.data);
                 }
             })
-            .catch(err => setError("Erreur réseau : " + err.message));
+            .catch(err => setError("on a pas trouvé la page !! Erreur réseau : " + err.message));
     }, []);
 
     return (
@@ -25,7 +25,7 @@ function Eleves() {
             ) : (
                 <ul>
                     {eleves.map(eleve => (
-                        <li key={eleve.ID}>{eleve.Nom} {eleve.Prenom}</li>
+                        <li key={eleve.ID}> {eleve.Nom} {eleve.Prenom}</li>
                     ))}
                 </ul>
             )}
