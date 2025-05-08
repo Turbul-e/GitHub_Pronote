@@ -13,7 +13,9 @@ const PageAccueil = () => {
                     <button className="bouton-login">
                         <NavLink to={"ConnexionEleve"}> Élève </NavLink>
                     </button>
-                    <button className="bouton-login">Professeur·e</button>
+                    <button className="bouton-login">
+                        <NavLink to={"ConnexionProf"}> Professeur·e </NavLink>
+                    </button>
                 </div>
             </div>
         </div>

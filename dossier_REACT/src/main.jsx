@@ -8,6 +8,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import PageEleveConnexion from "./pages/PageEleveConnexion";
 import PageEleveNote from "./pages/PageEleveNote";
+import PageProfConnexion from "./pages/PageProfConnexion";
+import PageProfNote from "./pages/PageProfNote";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +23,14 @@ const router = createBrowserRouter([
   {
     path: "ConnexionEleve/EleveNote",
     element: <PageEleveNote />
+  },
+  {
+    path: "ConnexionProf",
+    element: <PageProfConnexion />
+  },
+  {
+    path: "ConnexionProf/ProfNote",
+    element: <PageProfNote />
   },
   {
     path: "/ConnexionEleve/OubliMdp",
