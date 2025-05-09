@@ -57,7 +57,7 @@ const PageProfNote = () => {
 
             setEleves(filtres);
 
-            // Calcul de la moyenne
+            // Calcul de la moyenne de la classe
             let totalNotes = 0;
             let nombreNotes = 0;
 
@@ -81,6 +81,24 @@ const PageProfNote = () => {
             alert(`Erreur de connexion: ${error.message}`);
             console.error("Erreur lors du fetch:", error);
         }
+    };
+
+    // Calcul de la moyenne d'un élève
+    const calculerMoyenneEleve = (eleve) => {
+        let totalNotes = 0;
+        let nombreNotes = 0;
+
+        Object.entries(eleve)
+            .filter(([key]) => key.startsWith("Note_"))
+            .forEach(([_, note]) => {
+                const n = parseFloat(note);
+                if (!isNaN(n)) {
+                    totalNotes += n;
+                    nombreNotes++;
+                }
+            });
+
+        return nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
     };
 
     return (
@@ -128,6 +146,7 @@ const PageProfNote = () => {
                                 <th>Nom</th>
                                 <th>Prénom</th>
                                 <th>Notes</th>
+                                <th>Moyenne</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -142,6 +161,7 @@ const PageProfNote = () => {
                                                 <span key={cle}>{val} </span>
                                             ))}
                                     </td>
+                                    <td>{calculerMoyenneEleve(eleve)}</td>
                                 </tr>
                             ))}
                         </tbody>
