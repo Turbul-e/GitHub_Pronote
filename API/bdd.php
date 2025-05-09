@@ -2,12 +2,12 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+
 if (basename(__FILE__) !== basename($_SERVER["SCRIPT_FILENAME"])) {
-    // Ce fichier est inclus via un require, ne pas exécuter le reste
-    return;
+    return; // Inclus via require, ne rien exécuter
 }
 
-// Fonction pour se connecter à la base de données
+// Connexion à la base de données
 function connecterBDD() {
     $host = 'localhost';
     $dbname = 'PronoteBDD';
@@ -21,13 +21,13 @@ function connecterBDD() {
     }
 }
 
-// Fonction pour vérifier si la page est valide
+// Vérifie que la table est autorisée
 function pageValide($page) {
     $tablesAutorisees = ['Eleves', 'Disciplines', 'Evaluations', 'Professeurs'];
     return in_array($page, $tablesAutorisees);
 }
 
-// Fonction pour récupérer toutes les données d'une table donnée
+// Récupère toutes les données d'une table
 function recupererDonnees($bdd, $page) {
     $table = 'Pronote_' . $page;
 
@@ -40,7 +40,7 @@ function recupererDonnees($bdd, $page) {
     }
 }
 
-// Fonction pour récupérer les élèves selon l'année et la discipline
+// Récupère les élèves pour une année et discipline donnée
 function recupererElevesParAnneeEtDiscipline($bdd, $annee, $disciplineID) {
     try {
         $sql = "SELECT * FROM Pronote_Eleves WHERE Annee = ?";
@@ -56,15 +56,15 @@ function recupererElevesParAnneeEtDiscipline($bdd, $annee, $disciplineID) {
                 'Prenom' => $eleve['Prenom'],
             ];
 
-            // Sécuriser l'accès à Groupe
             if (isset($eleve['Groupe'])) {
                 $filtre['Groupe'] = $eleve['Groupe'];
             }
 
+            // Changement ici : on cherche des colonnes de la forme 'Note_Discipline_Numero'
             foreach ($eleve as $cle => $val) {
                 if (strpos($cle, 'Note_') === 0) {
-                    // Note_num1_num2 => on veut vérifier que le deuxième nombre correspond à $disciplineID
                     $parts = explode('_', $cle);
+                    // Vérifier que la structure est Note_Discipline_Numero
                     if (count($parts) === 3 && $parts[1] == $disciplineID) {
                         $filtre[$cle] = $val;
                     }
@@ -81,31 +81,69 @@ function recupererElevesParAnneeEtDiscipline($bdd, $annee, $disciplineID) {
 }
 
 
-// CORS - En-tête OPTIONS pour les requêtes préalables
+// Récupère les évaluations pour une discipline et une année données
+function recupererEvaluationsParDisciplineEtAnnee($bdd, $disciplineID, $annee) {
+    try {
+        // Ajouter le préfixe 'D' à la disciplineID pour correspondre à la base de données
+        $disciplineID = 'D' . $disciplineID;
+
+        // Modifier la requête pour ne sélectionner que le champ 'Libelle' et trier par 'Date' croissante
+        $sql = "SELECT Libelle, Date FROM Pronote_Evaluations WHERE Discipline = ? AND Classe = ? ORDER BY Date ASC";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$disciplineID, $annee]);
+
+        // Récupérer les résultats
+        $evaluations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Retourner uniquement le 'Libelle' et la 'Date'
+        return $evaluations;
+    } catch (Exception $e) {
+        return ['error' => 'Erreur récupération évaluations: ' . $e->getMessage()];
+    }
+}
+
+
+
+// Réponse pré-vol (OPTIONS CORS)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// Vérification de l'action de l'API
+// Traitement principal
 if (isset($_GET['action'])) {
     $bdd = connecterBDD();
 
-    // Si l'action est de récupérer les élèves par année et discipline
-    if ($_GET['action'] === 'eleves_annee_discipline') {
-        $annee = $_GET['annee'] ?? null;
-        $discipline = $_GET['discipline'] ?? null;
+    switch ($_GET['action']) {
+        case 'eleves_annee_discipline':
+            $annee = $_GET['annee'] ?? null;
+            $discipline = $_GET['discipline'] ?? null;
 
-        if ($annee && $discipline) {
-            echo json_encode(recupererElevesParAnneeEtDiscipline($bdd, $annee, $discipline));
-        } else {
-            echo json_encode(['error' => 'Paramètres manquants']);
-        }
-    } elseif (isset($_GET['page']) && pageValide($_GET['page'])) {
-        // Si l'action est de récupérer les données d'une table valide
-        echo json_encode(recupererDonnees($bdd, $_GET['page']));
-    } else {
-        echo json_encode(['error' => 'Page invalide']);
+            if ($annee && $discipline) {
+                echo json_encode(recupererElevesParAnneeEtDiscipline($bdd, $annee, $discipline));
+            } else {
+                echo json_encode(['error' => 'Paramètres manquants']);
+            }
+            break;
+
+        case 'evaluations_discipline_annee':
+            $annee = $_GET['annee'] ?? null;
+            $discipline = $_GET['discipline'] ?? null;
+
+            if ($annee && $discipline) {
+                echo json_encode(recupererEvaluationsParDisciplineEtAnnee($bdd, $discipline, $annee));
+            } else {
+                echo json_encode(['error' => 'Paramètres manquants']);
+            }
+            break;
+
+        default:
+            if (isset($_GET['page']) && pageValide($_GET['page'])) {
+                echo json_encode(recupererDonnees($bdd, $_GET['page']));
+            } else {
+                echo json_encode(['error' => 'Action ou page invalide']);
+            }
+            break;
     }
 } else {
     echo json_encode(['error' => 'Action non définie']);

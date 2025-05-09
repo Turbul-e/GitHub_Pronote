@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../style/PageAccueil.css";
 import { useLocation } from "react-router-dom";
 
@@ -22,23 +22,38 @@ const Dropdown = ({ trigger, menu }) => {
 
 const PageProfNote = () => {
     const location = useLocation();
-    const prof = location.state;
+    const prof = location.state; // Professeur récupéré depuis l'état du location
 
     const [annee, setAnnee] = useState("1A");
     const [groupe, setGroupe] = useState("Tous");
     const [eleves, setEleves] = useState([]);
     const [moyenneClasse, setMoyenneClasse] = useState(null);
+    const [evaluations, setEvaluations] = useState([]);
 
+    // Récupérer les évaluations
+    const recupererEvaluations = async () => {
+        try {
+            const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=evaluations_discipline_annee&discipline=${prof.Discipline}&annee=${annee}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP ${response.status}`);
+            }
+            const data = await response.json();
+            setEvaluations(data); // On stocke les libellés et les dates des évaluations
+        } catch (error) {
+            alert(`Erreur de récupération des évaluations: ${error.message}`);
+        }
+    };
+
+    // Récupérer les élèves et les évaluations
     const handleValider = async () => {
         try {
-            if (prof.Discipline === undefined || prof.Discipline === null) {
+            if (!prof.Discipline) {
                 alert("Erreur : Discipline non définie.");
                 return;
             }
 
             const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`;
-            console.log("URL utilisée pour la requête:", url);
-
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Erreur HTTP ${response.status}`);
@@ -50,12 +65,15 @@ const PageProfNote = () => {
                 return;
             }
 
-            // Filtrage par groupe
+            // Filtrage des élèves par groupe
             const filtres = groupe === "Tous"
                 ? data
-                : data.filter(e => String(e.Groupe) === groupe);
+                : data.filter(eleve => String(eleve.Groupe) === groupe);
 
             setEleves(filtres);
+
+            // Récupérer les évaluations
+            await recupererEvaluations();
 
             // Calcul de la moyenne de la classe
             let totalNotes = 0;
@@ -75,8 +93,6 @@ const PageProfNote = () => {
 
             const moyenne = nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
             setMoyenneClasse(moyenne);
-
-            alert("OK");
         } catch (error) {
             alert(`Erreur de connexion: ${error.message}`);
             console.error("Erreur lors du fetch:", error);
@@ -107,6 +123,7 @@ const PageProfNote = () => {
             <h2 className="sous-titre">Voyez ici les notes que vous avez données.</h2>
 
             <div className="boutons-groupés">
+                {/* Dropdown pour sélectionner l'année */}
                 <Dropdown
                     trigger={<button className="dropdown">{">"} {annee}</button>}
                     menu={[
@@ -115,6 +132,7 @@ const PageProfNote = () => {
                         <button onClick={() => setAnnee("3A")}>Troisième année</button>
                     ]}
                 />
+                {/* Dropdown pour sélectionner le groupe */}
                 <Dropdown
                     trigger={<button className="dropdown">{">"} {groupe === "Tous" ? "Tous les élèves" : `Groupe TD${groupe}`}</button>}
                     menu={[
@@ -145,7 +163,9 @@ const PageProfNote = () => {
                             <tr>
                                 <th>Nom</th>
                                 <th>Prénom</th>
-                                <th>Notes</th>
+                                {evaluations.map((evaluation, index) => (
+                                    <th key={index}>{evaluation.Libelle}</th>
+                                ))}
                                 <th>Moyenne</th>
                             </tr>
                         </thead>
@@ -154,13 +174,17 @@ const PageProfNote = () => {
                                 <tr key={index}>
                                     <td>{eleve.Nom}</td>
                                     <td>{eleve.Prenom}</td>
-                                    <td>
-                                        {Object.entries(eleve)
-                                            .filter(([cle]) => cle.startsWith("Note_"))
-                                            .map(([cle, val]) => (
-                                                <span key={cle}>{val} </span>
-                                            ))}
-                                    </td>
+                                    {evaluations.map((evaluation, idx) => {
+                                        // Générer la clé de la note en fonction de l'index de l'évaluation (1 pour la première, 2 pour la deuxième, etc.)
+                                        const noteKey = `Note_${prof.Discipline}_${idx + 1}`;
+
+                                        return (
+                                            <td key={idx}>
+                                                {/* Affiche la note correspondante, ou "-" si la note n'est pas présente */}
+                                                {eleve[noteKey]}
+                                            </td>
+                                        );
+                                    })}
                                     <td>{calculerMoyenneEleve(eleve)}</td>
                                 </tr>
                             ))}
