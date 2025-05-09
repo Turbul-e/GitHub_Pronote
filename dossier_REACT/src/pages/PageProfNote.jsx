@@ -28,25 +28,46 @@ const PageProfNote = () => {
     const [groupe, setGroupe] = useState("Tous");
     const [eleves, setEleves] = useState([]);
 
-    // Récupérer la discipline sous forme "D1", "D2", ...
-    const disciplineID = `D${prof.Discipline}`;
-
     const handleValider = async () => {
         try {
-            const response = await fetch(`http://localhost/PronoteAPI/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`);
+            // Vérifier si prof.Discipline est bien défini
+            if (prof.Discipline === undefined || prof.Discipline === null) {
+                alert("Erreur : Discipline non définie.");
+                return;
+            }
+
+            // Construire l'URL
+            const url = `http://localhost/GItHub_Pronote/API/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`;
+
+            // Afficher l'URL dans la console pour déboguer
+            console.log("URL utilisée pour la requête:", url);
+
+            // Envoyer la requête
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP ${response.status}`);
+            }
+
             const data = await response.json();
 
+            // Vérification et mise à jour du state
             if (Array.isArray(data)) {
-                // Si un groupe est sélectionné, on filtre ici
-                const filtres = groupe === "Tous" ? data : data.filter(e => e.Groupe === groupe);
-                setEleves(filtres);
+                setEleves(data);
+                alert("OK");
             } else {
-                console.error("Erreur API:", data);
+                alert("Erreur dans la réponse API");
+                console.error("Réponse inattendue:", data);
             }
         } catch (error) {
+            // Affichage de l'erreur dans l'alerte
+            alert(`Erreur de connexion: ${error.message}\nURL: http://localhost/PronoteAPI/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`);
             console.error("Erreur lors du fetch:", error);
         }
     };
+
+
+
 
     return (
         <div className="accueil-container">
@@ -93,7 +114,7 @@ const PageProfNote = () => {
                                     <td>{eleve.Prenom}</td>
                                     <td>
                                         {Object.entries(eleve)
-                                            .filter(([cle]) => cle.startsWith("Note_") && eleve[cle] !== null)
+                                            .filter(([cle]) => cle.startsWith("Note_"))
                                             .map(([cle, val]) => (
                                                 <span key={cle}>{val} </span>
                                             ))}
