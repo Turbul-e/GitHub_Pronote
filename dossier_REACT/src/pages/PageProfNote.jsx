@@ -27,6 +27,7 @@ const PageProfNote = () => {
     const [annee, setAnnee] = useState("1A");
     const [groupe, setGroupe] = useState("Tous");
     const [eleves, setEleves] = useState([]);
+    const [moyenneClasse, setMoyenneClasse] = useState(null);
 
     const handleValider = async () => {
         try {
@@ -39,27 +40,45 @@ const PageProfNote = () => {
             console.log("URL utilisée pour la requête:", url);
 
             const response = await fetch(url);
-
             if (!response.ok) {
                 throw new Error(`Erreur HTTP ${response.status}`);
             }
 
             const data = await response.json();
-
-            if (Array.isArray(data)) {
-                // Filtrer selon le groupe si ce n’est pas "Tous"
-                const filtres = groupe === "Tous"
-                    ? data
-                    : data.filter(e => String(e.Groupe) === groupe);
-
-                setEleves(filtres);
-                alert("OK");
-            } else {
+            if (!Array.isArray(data)) {
                 alert("Erreur dans la réponse API");
-                console.error("Réponse inattendue:", data);
+                return;
             }
+
+            // Filtrage par groupe
+            const filtres = groupe === "Tous"
+                ? data
+                : data.filter(e => String(e.Groupe) === groupe);
+
+            setEleves(filtres);
+
+            // Calcul de la moyenne
+            let totalNotes = 0;
+            let nombreNotes = 0;
+
+            filtres.forEach(eleve => {
+                Object.entries(eleve)
+                    .filter(([key]) => key.startsWith("Note_"))
+                    .forEach(([_, note]) => {
+                        const n = parseFloat(note);
+                        if (!isNaN(n)) {
+                            totalNotes += n;
+                            nombreNotes++;
+                        }
+                    });
+            });
+
+            const moyenne = nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
+            setMoyenneClasse(moyenne);
+
+            alert("OK");
         } catch (error) {
-            alert(`Erreur de connexion: ${error.message}\nURL: ${url}`);
+            alert(`Erreur de connexion: ${error.message}`);
             console.error("Erreur lors du fetch:", error);
         }
     };
@@ -90,6 +109,15 @@ const PageProfNote = () => {
                 />
                 <button className="bouton-simple" onClick={handleValider}>Valider</button>
             </div>
+
+            {/* Encadré Classe / Groupe / Moyenne */}
+            {moyenneClasse !== null && (
+                <div className="encadre-moyenne">
+                    <p><strong>Classe :</strong> {annee}</p>
+                    <p><strong>Groupe :</strong> {groupe === "Tous" ? "Classe entière" : groupe}</p>
+                    <p><strong>Moyenne :</strong> {moyenneClasse}</p>
+                </div>
+            )}
 
             {/* Affichage des élèves */}
             <div className="resultats">
