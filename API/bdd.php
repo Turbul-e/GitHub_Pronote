@@ -53,8 +53,13 @@ function recupererElevesParAnneeEtDiscipline($bdd, $annee, $disciplineID) {
         foreach ($eleves as $eleve) {
             $filtre = [
                 'Nom' => $eleve['Nom'],
-                'Prenom' => $eleve['Prenom']
+                'Prenom' => $eleve['Prenom'],
             ];
+
+            // Sécuriser l'accès à Groupe
+            if (isset($eleve['Groupe'])) {
+                $filtre['Groupe'] = $eleve['Groupe'];
+            }
 
             foreach ($eleve as $cle => $val) {
                 if (strpos($cle, 'Note_') === 0) {

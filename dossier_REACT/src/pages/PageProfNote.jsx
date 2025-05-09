@@ -30,19 +30,14 @@ const PageProfNote = () => {
 
     const handleValider = async () => {
         try {
-            // Vérifier si prof.Discipline est bien défini
             if (prof.Discipline === undefined || prof.Discipline === null) {
                 alert("Erreur : Discipline non définie.");
                 return;
             }
 
-            // Construire l'URL
-            const url = `http://localhost/GItHub_Pronote/API/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`;
-
-            // Afficher l'URL dans la console pour déboguer
+            const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`;
             console.log("URL utilisée pour la requête:", url);
 
-            // Envoyer la requête
             const response = await fetch(url);
 
             if (!response.ok) {
@@ -51,23 +46,23 @@ const PageProfNote = () => {
 
             const data = await response.json();
 
-            // Vérification et mise à jour du state
             if (Array.isArray(data)) {
-                setEleves(data);
+                // Filtrer selon le groupe si ce n’est pas "Tous"
+                const filtres = groupe === "Tous"
+                    ? data
+                    : data.filter(e => String(e.Groupe) === groupe);
+
+                setEleves(filtres);
                 alert("OK");
             } else {
                 alert("Erreur dans la réponse API");
                 console.error("Réponse inattendue:", data);
             }
         } catch (error) {
-            // Affichage de l'erreur dans l'alerte
-            alert(`Erreur de connexion: ${error.message}\nURL: http://localhost/PronoteAPI/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`);
+            alert(`Erreur de connexion: ${error.message}\nURL: ${url}`);
             console.error("Erreur lors du fetch:", error);
         }
     };
-
-
-
 
     return (
         <div className="accueil-container">
