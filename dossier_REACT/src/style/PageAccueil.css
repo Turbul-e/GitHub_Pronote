@@ -148,3 +148,72 @@ min-width: 180px;
   margin: 6px 0;
   font-size: 1rem;
 }
+
+.fiche-notes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Bloc fiche élève et bloc notes */
+.fiche-eleve,
+.bloc-notes {
+  background-color: #f9f9f9;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  padding: 20px 30px;
+  min-width: 300px;
+  width: 100%;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Texte dans la fiche élève */
+.fiche-eleve p {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #1a202c;
+}
+
+/* Liste de notes */
+.liste-notes {
+  list-style-type: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+}
+
+.note-ligne {
+  background-color: #f0fdf4;
+  border: 1px solid #c6f6d5;
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.note-ligne:hover {
+  background-color: #c6f6d5;
+}
+
+.note-cle {
+  font-weight: bold;
+  color: #124660;
+}
+
+.note-valeur {
+  color: #1a202c;
+}
+
+.texte-erreur {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  text-align: center;
+}
