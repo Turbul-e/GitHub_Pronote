@@ -133,3 +133,18 @@ min-width: 180px;
   background-color: #1B9476;
   transform: scale(1.05);
 }
+
+.encadre-moyenne {
+  background-color: #f9f9f9;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  padding: 16px 24px;
+  margin: 20px auto;
+  width: fit-content;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.encadre-moyenne p {
+  margin: 6px 0;
+  font-size: 1rem;
+}
