@@ -6,7 +6,7 @@ export default function PageProfConnexion() {
             typeUtilisateur="prof"
             titre="Professeur·e"
             redirectPath="/ConnexionProf/ProfNote"
-            lienMdpOublie="/ConnexionProf/OubliMdp"
+            lienMdpOublie="/ConnexionEleve/OubliMdp"
         />
     );
 }

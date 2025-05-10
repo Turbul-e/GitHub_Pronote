@@ -3,7 +3,7 @@ import "../style/PageAccueil.css";
 import { NavLink, useNavigate } from "react-router";
 import axios from "axios";
 
-const PageEleveConnexion = () => {
+export default function PageEleveConnexion() {
     const [login, setLogin] = useState("");
     const [mdp, setMdp] = useState("");
     const [error, setError] = useState(null);
