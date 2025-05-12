@@ -22,7 +22,7 @@ export default function PageEleveConnexion() {
             });
 
             if (response.data.success) {
-                // redirection vers la page du professeur avec ses infos
+                // redirection vers la page de l'élève avec ses infos
                 navigate("/ConnexionEleve/EleveNote", { state: response.data.eleve });
             } else {
                 setError(response.data.error);

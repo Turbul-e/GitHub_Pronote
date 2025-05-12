@@ -5,6 +5,7 @@ import PageProfNote from './pages/PageProfNote.jsx';
 
 function App() {
   return <PageAccueil />;
+  //return <PageProfNote />;
 }
 
 export default App;
