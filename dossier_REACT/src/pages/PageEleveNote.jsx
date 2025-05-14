@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import '../style/PageAccueil.css';
+import '../style/styleEnsemble.css';
 
 const PageEleveNote = () => {
     const location = useLocation();
