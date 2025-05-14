@@ -42,6 +42,7 @@ const PageProfNote = () => {
             }
             const data = await response.json();
             setEvaluations(data); // On stocke les libellés et les dates des évaluations
+
         } catch (error) {
             alert(`Erreur de récupération des évaluations: ${error.message}`);
         }
