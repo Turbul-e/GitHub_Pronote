@@ -121,16 +121,20 @@ const PageProfNote = () => {
         return nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
     };
 
-    const AddGrade = () => {
+    const AddGrade = async () => {
         if (contenuAjoutNote == "Ajouter une note") { //si on est pas en train d'ajouter une note, on active juste les input pour qu'on puisse écrire dedans.
             setAjoutNote(true);
+            setContenuAjoutNote("Enregistrer");
         }
-        else { //Sinon, on enregistre les notes. 
 
-            //Calcul du nombre total de note entré dans la matière
+        else { //Sinon, on enregistre les notes. 
+            setAjoutNote(false);
+            setContenuAjoutNote("Ajouter une note");
+
+            //Calcul du nombre total de note entrées dans la matière jusqu'ici
             let nombreNotes = 0;
 
-            Object.entries(eleve)
+            Object.entries(eleves)
                 .filter(([key]) => key.startsWith("Note_"))
                 .forEach(([_, note]) => {
                     const n = parseFloat(note);
@@ -138,10 +142,23 @@ const PageProfNote = () => {
                         nombreNotes++;
                     }
                 });
+            const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=ajout_note&annee=${annee}&discipline=${prof.Discipline}`;
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!Array.isArray(data)) {
+                alert("Erreur dans la réponse API");
+                return;
+            }
+
+
 
 
         }
-
     }
 
 
@@ -220,7 +237,7 @@ const PageProfNote = () => {
                                     <td>{eleve.Prenom}</td>
 
                                     {/*TOUTES LES NOTES DE L'ÉLÈVE */}
-                                    {evaluations.map((idx) => {
+                                    {evaluations.map((evaluation, idx) => {
                                         // Générer la clé de la note en fonction de l'index de l'évaluation (1 pour la première, 2 pour la deuxième, etc.)
                                         const noteKey = `Note_${prof.Discipline}_${idx + 1}`;
 

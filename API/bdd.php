@@ -124,14 +124,14 @@ function recupererEvaluationsParDisciplineEtAnnee($bdd, $disciplineID, $annee)
     }
 }
 
-function AjouterEvaluationParDisciplineEtAnnee($bdd, $disciplineID, $annee, $nouveauLibelle, $tableNotes)
+function AjouterEvaluationParDisciplineEtAnnee($bdd, $disciplineID, $annee, $nouveauLibelle, $rgEval)
 {
     $ttVaBien = true;
     // Ajouter le préfixe 'D' à la disciplineID pour correspondre à la base de données
     $disciplineID = 'D' . $disciplineID;
 
-    //Avoir la clé primaire de la dernière évaluation de la table
-    $evaluationID = 'N' . (getLastKey($bdd, "Evaluations") + 1); //la dernière clé de la table évaluation +1 et le préfixe
+    //Avoir l'ID de la nouvelle Evaluation
+    $evaluationID = 'Note_' . $disciplineID . '_' . $rgEval;
 
     //Pour la date de l'évaluation, mettre la date du jour de l'ajout de la note (pourrait être modifié si plus de temps)
     $dateEvaluation = date("d/m/Y");
@@ -152,7 +152,7 @@ function AjouterEvaluationParDisciplineEtAnnee($bdd, $disciplineID, $annee, $nou
     /* Il nous faut le nombre d'évaluations déjà faites dans cette matière : on peut soit aller le chercher directement dans la table, soit le faire arriver en paramètre car le calcul est déjà fait dans la PageProfNote. */
     try {
         // Requête SQL pour ajouter les infos de l'évaluation dans la table Pronote_Evaluations
-        $sql = "ALTER TABLE ";
+        $sql = "ALTER TABLE Pronote_Eleves ADD Note_{$disciplineID}_{$rgEval} DOUBLE(4, 2)";
         $bdd->exec($sql); //exécuter la commande sql préparée
 
 
@@ -160,6 +160,20 @@ function AjouterEvaluationParDisciplineEtAnnee($bdd, $disciplineID, $annee, $nou
         $ttVaBien = false;
         return ['error' => "Erreur dans l'ajout des données de la nouvelle évaluation : " . $e->getMessage()];
     }
+
+    //REMPLIR LA NOUVELLE COLONNE AVEC LES NOTES QU'ON A REMPLIES DANS LE TABLEAU -> C'EST PAS ENCORE FAIT !! J'AI JUSTE FAIT UN COPIER COLLER POUR PAS OUBLIER DE LE FAIRE
+    /*try {
+        // Requête SQL pour ajouter les infos de l'évaluation dans la table Pronote_Evaluations
+        $sql = "ALTER TABLE Pronote_Eleves ADD Note_{$disciplineID}_{$rgEval} DOUBLE(4, 2)";
+        $bdd->exec($sql); //exécuter la commande sql préparée
+
+
+    } catch (Exception $e) {
+        $ttVaBien = false;
+        return ['error' => "Erreur dans l'ajout des données de la nouvelle évaluation : " . $e->getMessage()];
+    }*/
+
+
     if ($ttVaBien)
         echo "Nouvelle évaluation créée avec succès";
 }
