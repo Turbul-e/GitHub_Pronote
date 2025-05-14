@@ -8,7 +8,8 @@ if (basename(__FILE__) !== basename($_SERVER["SCRIPT_FILENAME"])) {
 }
 
 // Connexion à la base de données
-function connecterBDD() {
+function connecterBDD()
+{
     $host = 'localhost';
     $dbname = 'PronoteBDD';
     $username = 'root';
@@ -22,13 +23,15 @@ function connecterBDD() {
 }
 
 // Vérifie que la table est autorisée
-function pageValide($page) {
+function pageValide($page)
+{
     $tablesAutorisees = ['Eleves', 'Disciplines', 'Evaluations', 'Professeurs'];
     return in_array($page, $tablesAutorisees);
 }
 
 // Récupère toutes les données d'une table
-function recupererDonnees($bdd, $page) {
+function recupererDonnees($bdd, $page)
+{
     $table = 'Pronote_' . $page;
 
     try {
@@ -40,8 +43,26 @@ function recupererDonnees($bdd, $page) {
     }
 }
 
+
+//Récupérer le numéro de la dernière clé primaire de la table 
+function getLastKey($bdd, $table)
+{
+
+    $table = 'Pronote_' . $table;
+    $sql = "SELECT ID FROM $table ORDER BY ID DESC LIMIT 1"; //récupérer l'ID de la dernière ligne
+
+    try {
+        $resultat = $bdd->query($sql);
+        $Lastkey = (int)substr($resultat[0], 1); //convertir en int le substring qu'on a créé pour enlever la clé d'authentification
+        return $resultat->fetch(); //récupérer la première (et ici seule) ligne du résultat
+    } catch (Exception $e) {
+        return ['error' => 'Erreur lors de la récupération des données: ' . $e->getMessage()];
+    }
+}
+
 // Récupère les élèves pour une année et discipline donnée
-function recupererElevesParAnneeEtDiscipline($bdd, $annee, $disciplineID) {
+function recupererElevesParAnneeEtDiscipline($bdd, $annee, $disciplineID)
+{
     try {
         $sql = "SELECT * FROM Pronote_Eleves WHERE Annee = ?";
         $stmt = $bdd->prepare($sql);
@@ -82,7 +103,8 @@ function recupererElevesParAnneeEtDiscipline($bdd, $annee, $disciplineID) {
 
 
 // Récupère les évaluations pour une discipline et une année données
-function recupererEvaluationsParDisciplineEtAnnee($bdd, $disciplineID, $annee) {
+function recupererEvaluationsParDisciplineEtAnnee($bdd, $disciplineID, $annee)
+{
     try {
         // Ajouter le préfixe 'D' à la disciplineID pour correspondre à la base de données
         $disciplineID = 'D' . $disciplineID;
@@ -100,6 +122,43 @@ function recupererEvaluationsParDisciplineEtAnnee($bdd, $disciplineID, $annee) {
     } catch (Exception $e) {
         return ['error' => 'Erreur récupération évaluations: ' . $e->getMessage()];
     }
+}
+
+function AjouterEvaluationParDisciplineEtAnnee($bdd, $disciplineID, $annee, $nouveauLibelle, $tableNotes)
+{
+    $ttVaBien = true;
+    // Ajouter le préfixe 'D' à la disciplineID pour correspondre à la base de données
+    $disciplineID = 'D' . $disciplineID;
+
+    //Avoir la clé primaire de la dernière évaluation de la table
+    $evaluationID = 'N' . (getLastKey($bdd, "Evaluations") + 1); //la dernière clé de la table évaluation +1 et le préfixe
+
+    //Pour la date de l'évaluation, mettre la date du jour de l'ajout de la note (pourrait être modifié si plus de temps)
+    $dateEvaluation = date("d/m/Y");
+
+    try {
+        // Requête SQL pour ajouter les infos de l'évaluation dans la table Pronote_Evaluations
+        $sql = "INSERT INTO Pronote_Evaluations VALUES ($evaluationID, $nouveauLibelle, $disciplineID, $annee, 1, $dateEvaluation)";
+        $bdd->exec($sql); //exécuter la commande sql préparée
+
+
+    } catch (Exception $e) {
+        $ttVaBien = false;
+        return ['error' => "Erreur dans l'ajout des données de la nouvelle évaluation : " . $e->getMessage()];
+    }
+
+    try {
+        // Requête SQL pour ajouter les infos de l'évaluation dans la table Pronote_Evaluations
+        $sql = "INSERT INTO Pronote_Evaluations VALUES ($evaluationID, $nouveauLibelle, $disciplineID, $annee, 1, $dateEvaluation)";
+        $bdd->exec($sql); //exécuter la commande sql préparée
+
+
+    } catch (Exception $e) {
+        $ttVaBien = false;
+        return ['error' => "Erreur dans l'ajout des données de la nouvelle évaluation : " . $e->getMessage()];
+    }
+    if ($ttVaBien)
+        echo "Nouvelle évaluation créée avec succès";
 }
 
 
@@ -148,4 +207,3 @@ if (isset($_GET['action'])) {
 } else {
     echo json_encode(['error' => 'Action non définie']);
 }
-?>

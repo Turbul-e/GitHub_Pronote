@@ -217,3 +217,14 @@ min-width: 180px;
   margin-top: 2rem;
   text-align: center;
 }
+
+.resultats>table>thead>tr>th {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.resultats>table>tbody {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  text-align: center;
+}
