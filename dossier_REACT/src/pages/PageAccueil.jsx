@@ -1,5 +1,5 @@
 import React from "react";
-import "../style/PageAccueil.css";
+import "../style/styleEnsemble.css";
 import { NavLink } from "react-router";
 
 const PageAccueil = () => {
