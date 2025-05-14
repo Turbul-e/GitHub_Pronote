@@ -10,9 +10,9 @@ if (basename(__FILE__) !== basename($_SERVER["SCRIPT_FILENAME"])) {
 // Connexion à la base de données
 function connecterBDD() {
     $host = 'localhost';
-    $dbname = 'PronoteBDD';
-    $username = 'root';
-    $password = '';
+    $dbname = 'lsaintecroi';
+    $username = 'lsaintecroi';
+    $password = 'lCFd83zGmHXckG9hxnM9';
 
     try {
         return new PDO('mysql:host=' . $host . ';dbname=' . $dbname . ';charset=utf8', $username, $password);
