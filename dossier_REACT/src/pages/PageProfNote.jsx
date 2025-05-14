@@ -31,6 +31,7 @@ const PageProfNote = () => {
     const [evaluations, setEvaluations] = useState([]);
     const [contenuAjoutNote, setContenuAjoutNote] = useState("Ajouter une note");
     const [ajoutNote, setAjoutNote] = useState(false);
+    const [nbEvaluations, setNbEvaluations] = useState(0);
 
     // Récupérer les évaluations
     const recupererEvaluations = async () => {
@@ -126,6 +127,19 @@ const PageProfNote = () => {
         }
         else { //Sinon, on enregistre les notes. 
 
+            //Calcul du nombre total de note entré dans la matière
+            let nombreNotes = 0;
+
+            Object.entries(eleve)
+                .filter(([key]) => key.startsWith("Note_"))
+                .forEach(([_, note]) => {
+                    const n = parseFloat(note);
+                    if (!isNaN(n)) {
+                        nombreNotes++;
+                    }
+                });
+
+
         }
 
     }
@@ -173,11 +187,13 @@ const PageProfNote = () => {
             <div className="resultats">
                 {eleves.length > 0 ? (
                     <table>
+
+
                         <thead>
                             <tr>
                                 <th></th>
                                 <th></th>
-                                {evaluations.map((evaluation, index) => (
+                                {evaluations.map((index) => (
                                     <th key={index}></th>
                                 ))}
                                 <th><button onClick={AddGrade}>{contenuAjoutNote}</button></th>
@@ -193,12 +209,18 @@ const PageProfNote = () => {
                                 <th>Moyenne</th>
                             </tr>
                         </thead>
+
+
+                        {/*LE TABLEAU DE NOTES*/}
                         <tbody>
                             {eleves.map((eleve, index) => (
                                 <tr key={index}>
+
                                     <td>{eleve.Nom}</td>
                                     <td>{eleve.Prenom}</td>
-                                    {evaluations.map((evaluation, idx) => {
+
+                                    {/*TOUTES LES NOTES DE L'ÉLÈVE */}
+                                    {evaluations.map((idx) => {
                                         // Générer la clé de la note en fonction de l'index de l'évaluation (1 pour la première, 2 pour la deuxième, etc.)
                                         const noteKey = `Note_${prof.Discipline}_${idx + 1}`;
 

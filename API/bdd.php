@@ -136,6 +136,7 @@ function AjouterEvaluationParDisciplineEtAnnee($bdd, $disciplineID, $annee, $nou
     //Pour la date de l'évaluation, mettre la date du jour de l'ajout de la note (pourrait être modifié si plus de temps)
     $dateEvaluation = date("d/m/Y");
 
+    //AJOUT D'UNE LIGNE DANS LA TABLE ÉVALUATION
     try {
         // Requête SQL pour ajouter les infos de l'évaluation dans la table Pronote_Evaluations
         $sql = "INSERT INTO Pronote_Evaluations VALUES ($evaluationID, $nouveauLibelle, $disciplineID, $annee, 1, $dateEvaluation)";
@@ -147,9 +148,11 @@ function AjouterEvaluationParDisciplineEtAnnee($bdd, $disciplineID, $annee, $nou
         return ['error' => "Erreur dans l'ajout des données de la nouvelle évaluation : " . $e->getMessage()];
     }
 
+    //AJOUT D'UNE NOUVELLE COLONNE DANS LA TABLE ELEVES
+    /* Il nous faut le nombre d'évaluations déjà faites dans cette matière : on peut soit aller le chercher directement dans la table, soit le faire arriver en paramètre car le calcul est déjà fait dans la PageProfNote. */
     try {
         // Requête SQL pour ajouter les infos de l'évaluation dans la table Pronote_Evaluations
-        $sql = "INSERT INTO Pronote_Evaluations VALUES ($evaluationID, $nouveauLibelle, $disciplineID, $annee, 1, $dateEvaluation)";
+        $sql = "ALTER TABLE ";
         $bdd->exec($sql); //exécuter la commande sql préparée
 
 
