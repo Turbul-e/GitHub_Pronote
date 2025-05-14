@@ -142,6 +142,8 @@ const PageProfNote = () => {
                         nombreNotes++;
                     }
                 });
+
+
             const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=ajout_note&annee=${annee}&discipline=${prof.Discipline}`;
 
             const response = await fetch(url);
