@@ -5,10 +5,7 @@ import { NavLink } from "react-router";
 const PageAccueil = () => {
   return (
     <div className="accueil-container">
-      <h1 className="titre">
-        {" "}
-        Bienvenue sur Pronote 2.0 kj fboiezbfijfezbpajb !
-      </h1>
+      <h1 className="titre"> Bienvenue sur Pronote 2.0 !</h1>
       <div className="contenu-central">
         <h2 className="sous-titre">Connexion</h2>
         <div className="boutons-groupés">
