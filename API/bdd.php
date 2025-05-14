@@ -20,6 +20,7 @@ function connecterBDD() {
         die(json_encode(['error' => 'Erreur de connexion à la BDD: ' . $e->getMessage()]));
     }
 }
+//https://votreidentifiant.zzz.bordeaux-inp.fr/votre_api.php?votre_parametre=xxx
 
 // Vérifie que la table est autorisée
 function pageValide($page) {
