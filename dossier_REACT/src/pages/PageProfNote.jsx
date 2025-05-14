@@ -29,6 +29,8 @@ const PageProfNote = () => {
     const [eleves, setEleves] = useState([]);
     const [moyenneClasse, setMoyenneClasse] = useState(null);
     const [evaluations, setEvaluations] = useState([]);
+    const [contenuAjoutNote, setContenuAjoutNote] = useState("Ajouter une note");
+    const [ajoutNote, setAjoutNote] = useState(false);
 
     // Récupérer les évaluations
     const recupererEvaluations = async () => {
@@ -117,6 +119,17 @@ const PageProfNote = () => {
         return nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
     };
 
+    const AddGrade = () => {
+        if (contenuAjoutNote == "Ajouter une note") { //si on est pas en train d'ajouter une note, on active juste les input pour qu'on puisse écrire dedans.
+            setAjoutNote(true);
+        }
+        else { //Sinon, on enregistre les notes. 
+
+        }
+
+    }
+
+
     return (
         <div className="accueil-container">
             <h1 className="titre">{prof.Prenom} {prof.Nom}</h1>
@@ -161,11 +174,21 @@ const PageProfNote = () => {
                     <table>
                         <thead>
                             <tr>
+                                <th></th>
+                                <th></th>
+                                {evaluations.map((evaluation, index) => (
+                                    <th key={index}></th>
+                                ))}
+                                <th><button onClick={AddGrade}>{contenuAjoutNote}</button></th>
+                                <th></th>
+                            </tr>
+                            <tr>
                                 <th>Nom</th>
                                 <th>Prénom</th>
                                 {evaluations.map((evaluation, index) => (
                                     <th key={index}>{evaluation.Libelle}</th>
                                 ))}
+                                <th><input type="text" disabled={!ajoutNote} id="libelleNouvelleNote" /></th>
                                 <th>Moyenne</th>
                             </tr>
                         </thead>
@@ -185,6 +208,7 @@ const PageProfNote = () => {
                                             </td>
                                         );
                                     })}
+                                    <td><input type="number" disabled={!ajoutNote} /></td>
                                     <td>{calculerMoyenneEleve(eleve)}</td>
                                 </tr>
                             ))}
