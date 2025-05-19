@@ -128,7 +128,7 @@ function recupererEvaluationsParDisciplineEtAnnee($bdd, $disciplineID, $annee)
 }
 
 function AjouterEvaluationParDisciplineEtAnnee($bdd, $disciplineID, $annee, $nouveauLibelle, $rgEval)
-{
+{   
     $ttVaBien = true;
     // Ajouter le préfixe 'D' à la disciplineID pour correspondre à la base de données
     $disciplineID = 'D' . $disciplineID;
