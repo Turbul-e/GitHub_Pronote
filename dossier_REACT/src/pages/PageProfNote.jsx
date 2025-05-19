@@ -2,37 +2,6 @@ import React, { useState, useEffect } from "react";
 import "../style/styleEnsemble.css";
 import { useLocation } from "react-router-dom";
 
-/*
-
-AddGradeToList -> liste est dans le composant principal pour qu'il puisse l'utiliser dans le bouton "Enregistrer" et l'envoyer à bdd.php avec le reste
-Mais le "handleInputChange" est dans LibelleARemplir -> faire une liste qui couvre les deux ? jsp. 
-
-*/
-const NewGrades = (action, noteCherchee, id) => {
-  const [listNewGrades, setListNewGrades] = useState([{ id: "00", grade: 0 }]); //ça a l'air de marcher...
-
-  if (action == "read") {
-    return listNewGrades;
-  }
-
-  if (action == "update") {
-    const newList = listNewGrades.map((item) => {
-      if (item.id === id) {
-        const noteMAJ = { id: id, grade: noteCherchee };
-        return noteMAJ;
-      }
-    });
-    setListNewGrades = newList;
-  }
-
-  if (action == "includes") {
-    //pour gérerles includes -> si la liste le contient, on dit oui. Sinon on dit non.
-    if (listNewGrades.includes(noteCherchee)) {
-      return true;
-    } else return false;
-  }
-};
-
 // Component Dropdown
 const Dropdown = ({ trigger, menu }) => {
   const [open, setOpen] = useState(false);
@@ -57,48 +26,6 @@ const Dropdown = ({ trigger, menu }) => {
   );
 };
 
-//Les inputs pour les notes après
-const LibelleARemplir = ({ disabled }) => {
-  const [inputValue, setInputValue] = useState("");
-
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
-
-  return (
-    <input
-      type="text"
-      value={inputValue}
-      onChange={handleInputChange}
-      disabled={disabled}
-    />
-  );
-};
-
-const NoteARemplir = ({ disabled, id }) => {
-  const [inputValue, setInputValue] = useState("");
-
-  const handleInputChange = (event, eleveID) => {
-    //Faire une disjonction de cas : est-ce que value était vide ou non ? Si oui, ajouter une ligne à la  liste. Sinon, trouver la ligne associée et ne changer que la note/la remplacer.
-    //if (inputValue == '') //si la case était vite avant => n'était pas dans la liste
-    if (NewGrades(includes, eleveID))
-      //si la liste contient déjà l'ID de l'élève -> on utilise la fonction NewGrades pour consulter ListNewGrades qui est une variable externe.
-
-      //à la fin on change la valeur de la case.
-      setInputValue(event.target.value);
-  };
-
-  return (
-    <input
-      type="number"
-      id={id}
-      value={inputValue}
-      onChange={handleInputChange}
-      disabled={disabled}
-    />
-  );
-};
-
 const PageProfNote = () => {
   const location = useLocation();
   const prof = location.state; // Professeur récupéré depuis l'état du location
@@ -110,18 +37,12 @@ const PageProfNote = () => {
   const [evaluations, setEvaluations] = useState([]);
   const [contenuAjoutNote, setContenuAjoutNote] = useState("Ajouter une note");
   const [ajoutNote, setAjoutNote] = useState(false);
-  const [annee, setAnnee] = useState("1A");
-  const [groupe, setGroupe] = useState("Tous");
-  const [eleves, setEleves] = useState([]);
-  const [moyenneClasse, setMoyenneClasse] = useState(null);
-  const [evaluations, setEvaluations] = useState([]);
-  const [ajoutNote, setAjoutNote] = useState(false);
   const [nbEvaluations, setNbEvaluations] = useState(0);
 
   // Récupérer les évaluations
   const recupererEvaluations = async () => {
     try {
-      const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=evaluations_discipline_annee&discipline=${prof.Discipline}&annee=${annee}`;
+      const url = `https://lsaintecroi.zzz.bordeaux-inp.fr/GitHub_Pronote/API/bdd.php?action=evaluations_discipline_annee&discipline=${prof.Discipline}&annee=${annee}`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Erreur HTTP ${response.status}`);
@@ -141,7 +62,7 @@ const PageProfNote = () => {
         return;
       }
 
-      const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`;
+      const url = `https://lsaintecroi.zzz.bordeaux-inp.fr/GitHub_Pronote/API/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Erreur HTTP ${response.status}`);
@@ -207,12 +128,40 @@ const PageProfNote = () => {
     return nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
   };
 
-  const AddGrade = () => {
+  const AddGrade = async () => {
     if (contenuAjoutNote == "Ajouter une note") {
       //si on est pas en train d'ajouter une note, on active juste les input pour qu'on puisse écrire dedans.
       setAjoutNote(true);
+      setContenuAjoutNote("Enregistrer");
     } else {
       //Sinon, on enregistre les notes.
+      setAjoutNote(false);
+      setContenuAjoutNote("Ajouter une note");
+
+      //Calcul du nombre total de note entrées dans la matière jusqu'ici
+      let nombreNotes = 0;
+
+      Object.entries(eleves)
+        .filter(([key]) => key.startsWith("Note_"))
+        .forEach(([_, note]) => {
+          const n = parseFloat(note);
+          if (!isNaN(n)) {
+            nombreNotes++;
+          }
+        });
+
+      const url = `https://lsaintecroi.zzz.bordeaux-inp.fr/GitHub_Pronote/API/bdd.php?action=ajout_note&annee=${annee}&discipline=${prof.Discipline}`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        alert("Erreur dans la réponse API");
+        return;
+      }
     }
   };
 
@@ -282,7 +231,7 @@ const PageProfNote = () => {
               <tr>
                 <th></th>
                 <th></th>
-                {evaluations.map((evaluation, index) => (
+                {evaluations.map((index) => (
                   <th key={index}></th>
                 ))}
                 <th>
@@ -306,11 +255,15 @@ const PageProfNote = () => {
                 <th>Moyenne</th>
               </tr>
             </thead>
+
+            {/*LE TABLEAU DE NOTES*/}
             <tbody>
               {eleves.map((eleve, index) => (
                 <tr key={index}>
                   <td>{eleve.Nom}</td>
                   <td>{eleve.Prenom}</td>
+
+                  {/*TOUTES LES NOTES DE L'ÉLÈVE */}
                   {evaluations.map((evaluation, idx) => {
                     // Générer la clé de la note en fonction de l'index de l'évaluation (1 pour la première, 2 pour la deuxième, etc.)
                     const noteKey = `Note_${prof.Discipline}_${idx + 1}`;
