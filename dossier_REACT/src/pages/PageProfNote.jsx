@@ -43,12 +43,18 @@ const Dropdown = ({ trigger, menu }) => {
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="dropdown" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+        <div
+            className="dropdown"
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+        >
             {trigger}
             {open && (
                 <ul className="menu">
                     {menu.map((item, i) => (
-                        <li key={i} className="menu-item">{item}</li>
+                        <li key={i} className="menu-item">
+                            {item}
+                        </li>
                     ))}
                 </ul>
             )}
@@ -77,14 +83,13 @@ const PageProfNote = () => {
     // Récupérer les évaluations
     const recupererEvaluations = async () => {
         try {
-            const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=evaluations_discipline_annee&discipline=${prof.Discipline}&annee=${annee}`;
+            const url = `https://lsaintecroi.zzz.bordeaux-inp.fr/GitHub_Pronote/API/bdd.php?action=evaluations_discipline_annee&discipline=${prof.Discipline}&annee=${annee}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Erreur HTTP ${response.status}`);
             }
             const data = await response.json();
             setEvaluations(data); // On stocke les libellés et les dates des évaluations
-
         } catch (error) {
             alert(`Erreur de récupération des évaluations: ${error.message}`);
         }
@@ -153,7 +158,7 @@ const PageProfNote = () => {
                 return;
             }
 
-            const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`;
+            const url = `https://lsaintecroi.zzz.bordeaux-inp.fr/GitHub_Pronote/API/bdd.php?action=eleves_annee_discipline&annee=${annee}&discipline=${prof.Discipline}`;
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Erreur HTTP ${response.status}`);
@@ -166,9 +171,10 @@ const PageProfNote = () => {
             }
 
             // Filtrage des élèves par groupe
-            const filtres = groupe === "Tous"
-                ? data
-                : data.filter(eleve => String(eleve.Groupe) === groupe);
+            const filtres =
+                groupe === "Tous"
+                    ? data
+                    : data.filter((eleve) => String(eleve.Groupe) === groupe);
 
             setEleves(filtres);
 
@@ -179,7 +185,7 @@ const PageProfNote = () => {
             let totalNotes = 0;
             let nombreNotes = 0;
 
-            filtres.forEach(eleve => {
+            filtres.forEach((eleve) => {
                 Object.entries(eleve)
                     .filter(([key]) => key.startsWith("Note_"))
                     .forEach(([_, note]) => {
@@ -191,7 +197,8 @@ const PageProfNote = () => {
                     });
             });
 
-            const moyenne = nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
+            const moyenne =
+                nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
             setMoyenneClasse(moyenne);
         } catch (error) {
             alert(`Erreur de connexion: ${error.message}`);
@@ -217,23 +224,15 @@ const PageProfNote = () => {
         return nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
     };
 
-
-    /*AJOUT D'UNE NOUVELLE ÉVALUATION : 
-
-    Pendant que le.la professeur.e entre les valeurs dans les zones d'input, la fonction addGradeToList les ajoute à une liste de toutes les notes. 
-    Puis, quand le ou la professeur.e appuie sur "Enregistrer", ce tableau ainsi que toutes les informatiosn sur la nouvelle note sont envoyées dans la fonction qui connectera à la page php, et qui mettra à jour la base de données.  */
-
-    const addGradeToList = (nom, prenom, event) => {
-        //const nouvelleListe = listNewGrades.concat({ nom, prenom, event.target.value })
-    }
-
     const AddGrade = async () => {
-        if (!ajoutNote) { //si on est pas en train d'ajouter une note, on active juste les input pour qu'on puisse écrire dedans.
+        if (contenuAjoutNote == "Ajouter une note") {
+            //si on est pas en train d'ajouter une note, on active juste les input pour qu'on puisse écrire dedans.
             setAjoutNote(true);
-        }
-
-        else { //Sinon, on enregistre les notes. 
+            setContenuAjoutNote("Enregistrer");
+        } else {
+            //Sinon, on enregistre les notes.
             setAjoutNote(false);
+            setContenuAjoutNote("Ajouter une note");
 
             //Calcul du nombre total de note entrées dans la matière jusqu'ici
             let nombreNotes = 0;
@@ -247,9 +246,7 @@ const PageProfNote = () => {
                     }
                 });
 
-
-            //A CHANGER AVEC LE BON LIEN UNE FOIS QUE LA FONCTION PHP EST FINIE !!!! 
-            /*const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=ajout_note&annee=${annee}&discipline=${prof.Discipline}`; 
+            const url = `https://lsaintecroi.zzz.bordeaux-inp.fr/GitHub_Pronote/API/bdd.php?action=ajout_note&annee=${annee}&discipline=${prof.Discipline}`;
 
             const response = await fetch(url);
             if (!response.ok) {
@@ -260,11 +257,9 @@ const PageProfNote = () => {
             if (!Array.isArray(data)) {
                 alert("Erreur dans la réponse API");
                 return;
-            }*/
-
-
+            }
         }
-    }
+    };
 
 
     //ET ENFIN L'AFFICHAGE DE LA PAGE ICI//
@@ -272,39 +267,59 @@ const PageProfNote = () => {
 
     return (
         <div className="accueil-container">
-            <h1 className="titre">{prof.Prenom} {prof.Nom}</h1>
+            <h1 className="titre">
+                {prof.Prenom} {prof.Nom}
+            </h1>
             <h2 className="sous-titre">Voyez ici les notes que vous avez données.</h2>
 
             <div className="boutons-groupés">
                 {/* Dropdown pour sélectionner l'année */}
                 <Dropdown
-                    trigger={<button className="dropdown">{">"} {annee}</button>}
+                    trigger={
+                        <button className="dropdown">
+                            {">"} {annee}
+                        </button>
+                    }
                     menu={[
                         <button onClick={() => setAnnee("1A")}>Première année</button>,
                         <button onClick={() => setAnnee("2A")}>Deuxième année</button>,
-                        <button onClick={() => setAnnee("3A")}>Troisième année</button>
+                        <button onClick={() => setAnnee("3A")}>Troisième année</button>,
                     ]}
                 />
                 {/* Dropdown pour sélectionner le groupe */}
                 <Dropdown
-                    trigger={<button className="dropdown">{">"} {groupe === "Tous" ? "Tous les élèves" : `Groupe TD${groupe}`}</button>}
+                    trigger={
+                        <button className="dropdown">
+                            {">"}{" "}
+                            {groupe === "Tous" ? "Tous les élèves" : `Groupe TD${groupe}`}
+                        </button>
+                    }
                     menu={[
                         <button onClick={() => setGroupe("Tous")}>Tous les élèves</button>,
                         <button onClick={() => setGroupe("1")}>Gr TD1</button>,
                         <button onClick={() => setGroupe("2")}>Gr TD2</button>,
                         <button onClick={() => setGroupe("3")}>Gr TD3</button>,
-                        <button onClick={() => setGroupe("4")}>Gr TD4</button>
+                        <button onClick={() => setGroupe("4")}>Gr TD4</button>,
                     ]}
                 />
-                <button className="bouton-simple" onClick={handleValider}>Valider</button>
+                <button className="bouton-simple" onClick={handleValider}>
+                    Valider
+                </button>
             </div>
 
             {/* Encadré Classe / Groupe / Moyenne */}
             {moyenneClasse !== null && (
                 <div className="encadre-moyenne">
-                    <p><strong>Classe :</strong> {annee}</p>
-                    <p><strong>Groupe :</strong> {groupe === "Tous" ? "Classe entière" : groupe}</p>
-                    <p><strong>Moyenne :</strong> {moyenneClasse}</p>
+                    <p>
+                        <strong>Classe :</strong> {annee}
+                    </p>
+                    <p>
+                        <strong>Groupe :</strong>{" "}
+                        {groupe === "Tous" ? "Classe entière" : groupe}
+                    </p>
+                    <p>
+                        <strong>Moyenne :</strong> {moyenneClasse}
+                    </p>
                 </div>
             )}
 
@@ -339,7 +354,6 @@ const PageProfNote = () => {
                         <tbody>
                             {eleves.map((eleve, index) => (
                                 <tr key={index}>
-
                                     <td>{eleve.Nom}</td>
                                     <td>{eleve.Prenom}</td>
 
