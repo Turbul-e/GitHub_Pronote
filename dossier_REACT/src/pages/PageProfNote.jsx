@@ -2,6 +2,40 @@ import React, { useState, useEffect } from "react";
 import "../style/styleEnsemble.css";
 import { useLocation } from "react-router-dom";
 
+/*
+
+AddGradeToList -> liste est dans le composant principal pour qu'il puisse l'utiliser dans le bouton "Enregistrer" et l'envoyer à bdd.php avec le reste
+Mais le "handleInputChange" est dans LibelleARemplir -> faire une liste qui couvre les deux ? jsp. 
+
+*/
+const NewGrades = (action, noteCherchee, id) => {
+    const [listNewGrades, setListNewGrades] = useState([{ id: '00', grade: 0 }]); //ça a l'air de marcher... 
+
+    if (action == "read") {
+        return listNewGrades;
+    }
+
+    if (action == "update") {
+        const newList = listNewGrades.map((item) => {
+            if (item.id === id) {
+                const noteMAJ = { id: id, grade: noteCherchee }
+                return noteMAJ;
+            }
+        })
+        setListNewGrades = newList;
+    }
+
+    if (action == "includes") { //pour gérerles includes -> si la liste le contient, on dit oui. Sinon on dit non. 
+        if (listNewGrades.includes(noteCherchee)) {
+            return true;
+        }
+        else return false;
+
+    }
+
+}
+
+
 // Component Dropdown
 const Dropdown = ({ trigger, menu }) => {
     const [open, setOpen] = useState(false);
@@ -20,6 +54,37 @@ const Dropdown = ({ trigger, menu }) => {
     );
 };
 
+//Les inputs pour les notes après 
+const LibelleARemplir = ({ disabled }) => {
+    const [inputValue, setInputValue] = useState('');
+
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+    };
+
+    return (
+        <input type="text" value={inputValue} onChange={handleInputChange} disabled={disabled} />
+    );
+}
+
+const NoteARemplir = ({ disabled, id }) => {
+    const [inputValue, setInputValue] = useState('');
+
+    const handleInputChange = (event, eleveID) => {
+        //Faire une disjonction de cas : est-ce que value était vide ou non ? Si oui, ajouter une ligne à la  liste. Sinon, trouver la ligne associée et ne changer que la note/la remplacer. 
+        //if (inputValue == '') //si la case était vite avant => n'était pas dans la liste
+        if (NewGrades(includes, eleveID)) //si la liste contient déjà l'ID de l'élève -> on utilise la fonction NewGrades pour consulter ListNewGrades qui est une variable externe. 
+
+            //à la fin on change la valeur de la case. 
+            setInputValue(event.target.value);
+    };
+
+    return (
+        <input type="number" id={id} value={inputValue} onChange={handleInputChange} disabled={disabled} />
+    );
+}
+
+
 const PageProfNote = () => {
     const location = useLocation();
     const prof = location.state; // Professeur récupéré depuis l'état du location
@@ -29,7 +94,6 @@ const PageProfNote = () => {
     const [eleves, setEleves] = useState([]);
     const [moyenneClasse, setMoyenneClasse] = useState(null);
     const [evaluations, setEvaluations] = useState([]);
-    const [contenuAjoutNote, setContenuAjoutNote] = useState("Ajouter une note");
     const [ajoutNote, setAjoutNote] = useState(false);
     const [nbEvaluations, setNbEvaluations] = useState(0);
 
@@ -121,15 +185,23 @@ const PageProfNote = () => {
         return nombreNotes > 0 ? (totalNotes / nombreNotes).toFixed(2) : null;
     };
 
+
+    /*AJOUT D'UNE NOUVELLE ÉVALUATION : 
+
+    Pendant que le.la professeur.e entre les valeurs dans les zones d'input, la fonction addGradeToList les ajoute à une liste de toutes les notes. 
+    Puis, quand le ou la professeur.e appuie sur "Enregistrer", ce tableau ainsi que toutes les informatiosn sur la nouvelle note sont envoyées dans la fonction qui connectera à la page php, et qui mettra à jour la base de données.  */
+
+    const addGradeToList = (nom, prenom, event) => {
+        //const nouvelleListe = listNewGrades.concat({ nom, prenom, event.target.value })
+    }
+
     const AddGrade = async () => {
-        if (contenuAjoutNote == "Ajouter une note") { //si on est pas en train d'ajouter une note, on active juste les input pour qu'on puisse écrire dedans.
+        if (!ajoutNote) { //si on est pas en train d'ajouter une note, on active juste les input pour qu'on puisse écrire dedans.
             setAjoutNote(true);
-            setContenuAjoutNote("Enregistrer");
         }
 
         else { //Sinon, on enregistre les notes. 
             setAjoutNote(false);
-            setContenuAjoutNote("Ajouter une note");
 
             //Calcul du nombre total de note entrées dans la matière jusqu'ici
             let nombreNotes = 0;
@@ -144,7 +216,8 @@ const PageProfNote = () => {
                 });
 
 
-            const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=ajout_note&annee=${annee}&discipline=${prof.Discipline}`;
+            //A CHANGER AVEC LE BON LIEN UNE FOIS QUE LA FONCTION PHP EST FINIE !!!! 
+            /*const url = `http://localhost/GitHub_Pronote/API/bdd.php?action=ajout_note&annee=${annee}&discipline=${prof.Discipline}`; 
 
             const response = await fetch(url);
             if (!response.ok) {
@@ -155,9 +228,7 @@ const PageProfNote = () => {
             if (!Array.isArray(data)) {
                 alert("Erreur dans la réponse API");
                 return;
-            }
-
-
+            }*/
 
 
         }
@@ -206,16 +277,14 @@ const PageProfNote = () => {
             <div className="resultats">
                 {eleves.length > 0 ? (
                     <table>
-
-
                         <thead>
                             <tr>
                                 <th></th>
                                 <th></th>
-                                {evaluations.map((index) => (
-                                    <th key={index}></th>
+                                {evaluations.map((evaluation) => (
+                                    <th key={evaluation.ID}></th>
                                 ))}
-                                <th><button onClick={AddGrade}>{contenuAjoutNote}</button></th>
+                                <th><button onClick={AddGrade}>{ajoutNote ? "Enregistrer" : "Ajouter une note"}</button></th>
                                 <th></th>
                             </tr>
                             <tr>
@@ -224,7 +293,7 @@ const PageProfNote = () => {
                                 {evaluations.map((evaluation, index) => (
                                     <th key={index}>{evaluation.Libelle}</th>
                                 ))}
-                                <th><input type="text" disabled={!ajoutNote} id="libelleNouvelleNote" /></th>
+                                <th><LibelleARemplir disabled={!ajoutNote} placeholder="Nouvelle évaluation" id="libelleNouvelleNote" /></th>
                                 <th>Moyenne</th>
                             </tr>
                         </thead>
@@ -250,7 +319,11 @@ const PageProfNote = () => {
                                             </td>
                                         );
                                     })}
-                                    <td><input type="number" disabled={!ajoutNote} /></td>
+                                    {/* Pour ajouter des notes : on fait un input numérique, qui s'active quand on clique sur ajouter une note et qui est 
+                                    identifiable grâce à l'ID de l'élève => permettra de le mettre plus facilement dans le tableau SQL à la fin. Quand la valeur
+                                    de l'input est changée, elle change également dans la liste de nouvelles notes. 
+                                    */}
+                                    <td><NoteARemplir id={eleve.ID} disabled={!ajoutNote} onChange={addGradeToList(eleve.ID)} /></td>
                                     <td>{calculerMoyenneEleve(eleve)}</td>
                                 </tr>
                             ))}
@@ -260,6 +333,17 @@ const PageProfNote = () => {
                     <p>Aucun élève affiché. Cliquez sur "Valider".</p>
                 )}
             </div>
+
+            {/*
+            <ul>
+                {listNewGrades.map((id, grade) => {
+                    return (
+                        <li key={id}>{id} : {grade} </li>
+                    )
+                })
+
+                }
+            </ul>*/}
         </div>
     );
 };

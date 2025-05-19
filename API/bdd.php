@@ -67,7 +67,7 @@ function recupererElevesParAnneeEtDiscipline($bdd, $annee, $disciplineID)
         $sql = "SELECT * FROM Pronote_Eleves WHERE Annee = ?";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$annee]);
-        $eleves = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $eleves = $stmt->fetchAll(PDO::FETCH_ASSOC); //va chercher absolument tout de la table élève
 
         $resultat = [];
 
@@ -79,6 +79,10 @@ function recupererElevesParAnneeEtDiscipline($bdd, $annee, $disciplineID)
 
             if (isset($eleve['Groupe'])) {
                 $filtre['Groupe'] = $eleve['Groupe'];
+            }
+
+            if (isset($eleve['ID'])) {
+                $filtre['ID'] = $eleve['ID'];
             }
 
             // Changement ici : on cherche des colonnes de la forme 'Note_Discipline_Numero'
