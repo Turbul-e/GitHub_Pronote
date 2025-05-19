@@ -8,8 +8,9 @@ AddGradeToList -> liste est dans le composant principal pour qu'il puisse l'util
 Mais le "handleInputChange" est dans LibelleARemplir -> faire une liste qui couvre les deux ? jsp. 
 
 */
+
+/*
 const NewGrades = (action, noteCherchee, id) => {
-    const [listNewGrades, setListNewGrades] = useState([{ id: '00', grade: 0 }]); //ça a l'air de marcher... 
 
     if (action == "read") {
         return listNewGrades;
@@ -34,9 +35,10 @@ const NewGrades = (action, noteCherchee, id) => {
     }
 
 }
+    */
 
 
-// Component Dropdown
+// Composant Dropdown
 const Dropdown = ({ trigger, menu }) => {
     const [open, setOpen] = useState(false);
 
@@ -54,35 +56,9 @@ const Dropdown = ({ trigger, menu }) => {
     );
 };
 
-//Les inputs pour les notes après 
-const LibelleARemplir = ({ disabled }) => {
-    const [inputValue, setInputValue] = useState('');
 
-    const handleInputChange = (event) => {
-        setInputValue(event.target.value);
-    };
 
-    return (
-        <input type="text" value={inputValue} onChange={handleInputChange} disabled={disabled} />
-    );
-}
 
-const NoteARemplir = ({ disabled, id }) => {
-    const [inputValue, setInputValue] = useState('');
-
-    const handleInputChange = (event, eleveID) => {
-        //Faire une disjonction de cas : est-ce que value était vide ou non ? Si oui, ajouter une ligne à la  liste. Sinon, trouver la ligne associée et ne changer que la note/la remplacer. 
-        //if (inputValue == '') //si la case était vite avant => n'était pas dans la liste
-        if (NewGrades(includes, eleveID)) //si la liste contient déjà l'ID de l'élève -> on utilise la fonction NewGrades pour consulter ListNewGrades qui est une variable externe. 
-
-            //à la fin on change la valeur de la case. 
-            setInputValue(event.target.value);
-    };
-
-    return (
-        <input type="number" id={id} value={inputValue} onChange={handleInputChange} disabled={disabled} />
-    );
-}
 
 
 const PageProfNote = () => {
@@ -95,7 +71,8 @@ const PageProfNote = () => {
     const [moyenneClasse, setMoyenneClasse] = useState(null);
     const [evaluations, setEvaluations] = useState([]);
     const [ajoutNote, setAjoutNote] = useState(false);
-    const [nbEvaluations, setNbEvaluations] = useState(0);
+    const [listNewGrades, setListNewGrades] = useState([{ id: '00', grade: 0 }]); //ça a l'air de marcher... 
+
 
     // Récupérer les évaluations
     const recupererEvaluations = async () => {
@@ -112,6 +89,61 @@ const PageProfNote = () => {
             alert(`Erreur de récupération des évaluations: ${error.message}`);
         }
     };
+
+
+    //Les inputs pour les notes après 
+
+    const NoteARemplir = ({ disabled, id }) => {
+        const [inputValue, setInputValue] = useState('');
+        const [newList, setNewList] = useState(listNewGrades);
+
+        const handleInputChange = (event, eleveID) => {
+
+            //on change la valeur de la case
+            setInputValue(event.target.value);
+
+            console.log(id,)
+
+            //Faire une disjonction de cas : est-ce que value était vide ou non ? Si oui, ajouter une ligne à la  liste. Sinon, trouver la ligne associée et ne changer que la note/la remplacer. 
+
+            if (listNewGrades.includes(eleveID)) { //si la liste contient déjà l'ID de l'élève -> on parcourt la liste jusqu'à changer l'item ayant comme ID celui de l'élève en question
+                setNewList = listNewGrades.map((item) => {
+                    if (item.id === eleveID) {
+                        const noteMAJ = { id: id, grade: event.target.value }
+                        return noteMAJ;
+                    }
+                })
+                setListNewGrades = newList;
+                console.log(listNewGrades);
+            }
+
+
+            else { //si la liste ne contient pas déjà l'élève, on ajoute un item. 
+                //il faut avoir l'ID de l'élève.
+                setNewList = listNewGrades.concat({ id: eleveID, grade: event.target.value })
+                setListNewGrades = newList;
+
+                console.log(listNewGrades);
+            }
+
+        };
+
+        return (
+            <input type="number" id={id} value={inputValue} onChange={handleInputChange} disabled={disabled} />
+        );
+    }
+
+    const LibelleARemplir = ({ disabled }) => {
+        const [inputValue, setInputValue] = useState('');
+
+        const handleInputChange = (event) => {
+            setInputValue(event.target.value);
+        };
+
+        return (
+            <input type="text" value={inputValue} onChange={handleInputChange} disabled={disabled} />
+        );
+    }
 
     // Récupérer les élèves et les évaluations
     const handleValider = async () => {
@@ -235,6 +267,9 @@ const PageProfNote = () => {
     }
 
 
+    //ET ENFIN L'AFFICHAGE DE LA PAGE ICI//
+
+
     return (
         <div className="accueil-container">
             <h1 className="titre">{prof.Prenom} {prof.Nom}</h1>
@@ -284,6 +319,7 @@ const PageProfNote = () => {
                                 {evaluations.map((evaluation) => (
                                     <th key={evaluation.ID}></th>
                                 ))}
+                                {/*LE BOUTON POUR "AJOUTER UNE NOTE | ENREGISTRER" */}
                                 <th><button onClick={AddGrade}>{ajoutNote ? "Enregistrer" : "Ajouter une note"}</button></th>
                                 <th></th>
                             </tr>
@@ -319,11 +355,15 @@ const PageProfNote = () => {
                                             </td>
                                         );
                                     })}
+
+
                                     {/* Pour ajouter des notes : on fait un input numérique, qui s'active quand on clique sur ajouter une note et qui est 
                                     identifiable grâce à l'ID de l'élève => permettra de le mettre plus facilement dans le tableau SQL à la fin. Quand la valeur
                                     de l'input est changée, elle change également dans la liste de nouvelles notes. 
                                     */}
-                                    <td><NoteARemplir id={eleve.ID} disabled={!ajoutNote} onChange={addGradeToList(eleve.ID)} /></td>
+                                    <td><NoteARemplir id={eleve.ID} disabled={!ajoutNote} /></td>
+
+
                                     <td>{calculerMoyenneEleve(eleve)}</td>
                                 </tr>
                             ))}
