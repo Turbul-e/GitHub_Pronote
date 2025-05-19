@@ -21,7 +21,7 @@ const PageConnexion = ({
 
     try {
       const response = await axios.post(
-        "https://lsaintecroi.zzz.bordeaux-inp.fr/GitHub_Pronote/API/login.php?votre_parametre=xxx",
+        "https://lsaintecroi.zzz.bordeaux-inp.fr/API/login.php?votre_parametre=xxx",
         {
           login,
           mdp,
